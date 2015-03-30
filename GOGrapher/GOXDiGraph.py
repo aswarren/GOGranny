@@ -70,7 +70,7 @@ class GOXDiGraph(DiGraph, GOGraphBase):
     # for source/sink at bottom of graph first (as in a depth first traversal).
     # @param func A function that accepts two arguments (the source and sink of a directed edge)
     def traverseWithDirection(self, func):
-        sorted = dfs_postorder_nodes(self)
+        sorted = list(dfs_postorder_nodes(self))
         for source in sorted:
             for sink in self.neighbors(source):
                 func(source, sink)
