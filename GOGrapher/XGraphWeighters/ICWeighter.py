@@ -57,11 +57,12 @@ class ICWeighter(WeightingInterface):
     def updateIC(self):
         self.error.debug("Updating each nodes information content value")      
         totalAnnotCount = len(self.originalGraph.root.getProteins(self.originalGraph.species)) + self.propProtCount[self.originalGraph.root.goid]
+        self.originalGraph.root.totalAnnotCount=totalAnnotCount
 
         # Go through all the nodes and call their updateInfoContent the IC
         for node in self.originalGraph.nodes_iter():
             protCount = len(node.getProteins(self.originalGraph.species)) + self.propProtCount[node.goid]
-            node.infoContent = log(totalAnnotCount) - log(protCount)
+            node.infoContent = (log(totalAnnotCount) - log(protCount))/log(2)
                                                          
                 
 
