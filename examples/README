@@ -1,0 +1,50 @@
+README file for GOGrapher examples.
+
+## First Step ##
+THIS STEP IS NECESSARY BEFORE THE FOLLOWING EXAMPLES WILL WORK
+
+The first thing you will likely want to do is create an example graph file.  To do this, run:
+$> python makeHumanBiologicalProcess.py
+
+This will create two files in the examples directory:
+ 1) human.bp.digraph.pickle - A directed version of the Human biological process graph
+ 2) human.bp.graph.pickle - An undirected version of the Human biological process graph
+
+
+
+## Making Images ##
+You can, if you wish, now create an image of this graph (you will need pygraphviz 
+installed).  To do this, you can run:
+
+$> python makeHumanBiologicalProcessImage.py
+
+This might take a while to make the whole graph.  You can easily expiriment with 
+mixing this script with the one that makes a Minimal Spanning Tree (MST).  The full
+picture is really...full.
+
+
+
+## Making a Minimal Spanning Tree ##
+By running:
+$> python makeMinimalSpanningTree.py
+
+A minimal spanning tree (based on the random selection of 20 nodes) will be 
+created and stored in an XGMML file (which can be imported into Cytoscape - 
+see https://projects.dbbe.musc.edu/trac/GOGrapher/wiki/ViewingXGMMLInCytoscape
+for more information).
+
+
+
+## Making an XGMML File ##
+By running:
+$> python makeXGMML.py
+The human directed biological process graph will be saved to an xgmml file.
+
+
+## Others ##
+makeProteinGraph.py will make a GOProteinGraph from the human biological
+process graph and saves it as a pickle file.
+
+weightGraph.py will weight the directed human biological process graph
+using the simple weighter (adds a weight of 1 to each edge) and saves
+it as a pickle file.

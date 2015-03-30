@@ -1,0 +1,253 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+    <head>
+        <title>
+            GOSteiner
+        </title>
+        <!-- metadata -->
+        <meta name="generator" content="S5" />
+        <meta name="version" content="S5 1.1" />
+        <meta name="author" content="Lam Tsoi, Brian Muller" />
+        <!-- configuration parameters -->
+        <meta name="defaultView" content="slideshow" />
+        <meta name="controlVis" content="hidden" />
+        <!-- style sheet links -->
+        <link rel="stylesheet" href="http://www.carc.musc.edu/s5/ui/musc/slides.css" type="text/css" media="projection" id="slideProj" />
+        <link rel="stylesheet" href="http://www.carc.musc.edu/s5/ui/musc/outline.css" type="text/css" media="screen" id="outlineStyle" />
+        <link rel="stylesheet" href="http://www.carc.musc.edu/s5/ui/musc/print.css" type="text/css" media="print" id="slidePrint" />
+        <link rel="stylesheet" href="http://www.carc.musc.edu/s5/ui/musc/opera.css" type="text/css" media="projection" id="operaFix" />
+        <!-- S5 JS -->
+        <script src="style/slides.js" type="text/javascript"></script>
+    </head>
+    <body>
+
+        <div class="layout">
+            <div id="controls"><!-- DO NOT EDIT --></div>
+            <div id="currentSlide"><!-- DO NOT EDIT --></div>
+            <div id="header"></div>
+            <div id="footer">
+                <h1>MUSC Bioinformatics Algorithms class, Spring 07</h1>
+                <h2>Lam Tsoi and Brian Muller</h2>
+            </div>
+
+        </div>
+
+
+        <div class="presentation">
+
+            <div class="slide">
+                <h1>Review of the GOSteiner Project</h1>
+                <h2></h2>
+                <h3></h3>
+                <h4>created by Xinghua Lu, Lam C Tsoi, Brian Muller</h4>
+            </div>
+
+            <div class="slide">
+                <h1>Overview</h1>
+                <ul>
+                    <li>Introduction</li>
+                    <li>Methodology</li>
+                    <li>Implementation</li>
+                    <li>Conclusion</li>
+                </ul>
+                <div class="handout"></div>
+            </div>
+
+<!-- start bmuller additions -->
+            <div class="slide">
+                <h1>Motivation and Foundation</h1>
+                Biologists would like to know to what extent certain proteins are functionally similiar.  We used a handful of tools
+                to determine a basic similarity distance.
+                <br /><br />
+                Tools Used:
+                <ul>
+                    <li><a href="https://networkx.lanl.gov/wiki">NetworkX graphing library</a></li>
+                    <li><a href="http://www.geneontology.org/">Gene Ontology database</a></li>
+                    <li><a href="http://python.org">Python</a></li>
+                </ul>
+                <div class="handout"></div>
+            </div>
+
+            <div class="slide">
+                <h1>Methodology</h1>
+                <ol>
+                    <li>Create weighted, directed graph from GO term relationships.
+                       <ul>
+                         <li>Each term (node) has some number of proteins associated with it</li>
+                         <li>Each edge has a weight based on proteins associated with children terms</li>
+                       </ul>
+                    </li>
+                    <li>The graph is trimmed; those nodes with no associated proteins (both directly and through children) are removed.</li>
+                </ol>
+                <div class="handout"></div>
+            </div>
+
+<!-- end bmuller additions -->
+
+
+		<div class="slide">
+		   <h1>Dijkstra's algorithm</h1>
+		   <ul>
+			 <li>Convert to weighted undirected graph</li>
+			 <li>Extract all pair-wise shortest paths between GO terms that have protein associations</li>
+			 <li>Dijkstra algorithm: similar to Prim's algorithm, but the length of the path (from source to candidate vertex) is more important</li>
+		   </ul>
+		</div>
+
+
+		<div class="slide">
+		       <img src="images/dijkstra.gif" />
+		</div>
+
+		<div class="slide">
+		   <h1>Bidirectional Dijkstra's algorithm</h1>
+		   <ul>
+			 <li> Twice as fast as Dijkstra </li>
+			 <li> Expands the nodes from both the source and sink </li>
+			 <li> 1256 GOids with associated proteins (out of 2119 terms), so about 788,000 shortest paths - (n * (n - 1)) / 2.  
+			 The shortest paths are found and stored for the completed graph.</li>
+		   </ul>   
+
+		</div>
+
+		<div class="slide">
+		   <h1>GOSteinerTree</h1>
+		   <ul>
+			 <li> Given protein list --> get GOids </li>
+			 <li> Perform Kou algorithm </li>
+			 <li> Output: minimum spanning tree of the associated GOids </li>
+		   </ul>   
+
+		</div>
+
+		<div class="slide">
+		   <h1>GOSteinerTree</h1>
+			<img src="images/kou.gif" />
+
+		</div>
+
+		<div class="slide">
+		   <h1> Prim's algorithm </h1>
+               <ul>
+			  <li> Construct minimum spanning tree from complete/connected graph</li>
+			  <li> Priority queue is used to store the edges visited </li>
+			  <img src="images/prim.gif" />
+		   </ul>
+		
+
+		</div>
+
+		<div class="slide">
+		   <h1> Priority queue: heapq </h1>
+               <ul>
+			  <li> the weight, as well as the edge is added to the queue </li>
+			  <li> heapq module from python </li>
+			  <li> a[k] <= a[2*k+1] and a[k] <= a[2*k+2] </li>
+			  <li> a[0] is always the smallest </li>
+ 			  <li> heappush and heappop </li>
+		   </ul>
+		
+			  
+		</div>
+
+	      <div class="slide">
+		   <h1> Trimming algorithm </h1>
+               Trimming the leaves that are not associated with the protein list 
+		   <ul>     
+			  <li> Initialize with a GOid in the list </li>
+			  <li> keep track of the nodes visited </li>
+                    <li> trim(node) </li>
+			  <ul>
+				  <li> if node has child: </li>
+				  <ul>
+					  <li> for node.child: </li>
+					  <ul> 
+						  <li> trim(node) </li>
+					  </ul>
+				  </ul>
+				  <li> if node STILL does not have child </li>
+				  <ul>
+					  <li> if node not in list </li>
+					  <ul>
+						  <li> delete node </li>
+				   	  </ul>
+				  </ul>
+			  </ul>
+		   </ul>
+
+		<div class="slide">
+		   <h1> Trimming algorithm </h1>
+			<img src="images/trim.gif" />
+
+		</div>
+		   
+		   
+		   
+		</div>
+		
+		<div class="slide">
+		   <h1> GOSteinerTree: output </h1>
+			 <ul>
+			 	<li> weighted, non-directional MST </li>
+				<li> total length of tree, measured in Lus </li>
+				<li> compare distances with random GOids </li>
+				<li> test set: protein list in KEGG pathway </li>
+			 </ul>
+		</div>
+		
+<!-- start bmuller additions -->
+                <div class="slide">
+
+                   <h1>Implementation</h1>
+                   <ul>
+                         <li>Extended networkx weighted graphs (directed and undirected)</li>
+                         <li>Created our own edge and node classes</li>
+                         <img src="images/classes.png" />
+                   </ul>
+
+                </div>
+
+                <div class="slide">
+                   <h1>Implementation (cont.)</h1>
+                   <center><b>Object Persistence</b><br /><br />
+                         <img src="images/storage.png" /></center>
+                </div>
+
+		<div class="slide">
+	          <h1>Implementation - Usage</h1>
+	          <ul class="incremental">
+                    <li>Initialize graphs / storage given a domain, species, associations file, GO Term xml file</li>
+                    <li>Give a group of proteins</li>
+		    <li>Returns graph (Steiner tree), with total weight, etc.</li>
+		  </ul>
+	        </div>
+
+                <div class="slide">
+                   <h1>Results and Future Plans</h1>
+		   The initial storage function takes about 2 hours to complete.  The bottleneck is determining and storing the ~700,000 shortest paths.  
+		   We are still testing the second stage.
+                   <ul>
+                       <li>Add support for gene file from KEGG</li>
+                       <li>Web interface</li>                            
+                       <li>Visualization tools</li>
+                   </ul>
+
+                </div>
+
+                <div class="slide">
+                   <h1>Resources</h1>
+                   <ul>
+                       <li><a href="http://code.google.com/p/gosteiner">Project Homepage</a></li>
+                       <li><a href="http://people.musc.edu/~mullerb/goapi/index.html">API</a></li>
+                   </ul>
+
+                </div>
+
+<!-- end bmuller additions -->
+        </div>
+
+    </body>
+</html>
