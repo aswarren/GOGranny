@@ -1,6 +1,6 @@
 # This will add all of the gene products to the graph as vertices
 
-from GOGrapher import *
+from GOGranny import *
 
 # We want to print debugging info
 error = GOError(3)

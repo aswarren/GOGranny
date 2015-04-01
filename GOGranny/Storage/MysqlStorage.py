@@ -3,7 +3,7 @@
 # \author mullerb@musc.edu
 
 import StorageInterface
-from GOGrapher.GONode import GOProteinNode, GOTermNode
+from GOGranny.GONode import GOProteinNode, GOTermNode
     
 
 # Store that can use a variety of DB types

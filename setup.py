@@ -14,11 +14,11 @@ except ImportError:
 
 setup(name='GOGranny',
             version='0.0',
-            description='A network graph representation of the Gene Ontology based on GOGrapher',
+            description='A network graph representation of the Gene Ontology based on GOGranny',
             author='Andrew Warren',
             author_email='aswarren@gmail.com',
             url='https://github.com/aswarren/GOGranny',
-            packages=['GOGrapher', 'GOGrapher.Storage', 'GOGrapher.XGraphWeighters'],
+            packages=['GOGranny', 'GOGranny.Storage', 'GOGranny.XGraphWeighters'],
             long_description = '',
             license='GNU GPL v2',
             )

@@ -2,7 +2,7 @@
 # Common storage classes/functions
 # \author mullerb@musc.edu
 
-from GOGrapher import GOError    
+from GOGranny import GOError    
 
 ## Abstract class / Interface for all storage implementations.
 class StorageInterface:

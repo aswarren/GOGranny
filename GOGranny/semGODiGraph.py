@@ -3,8 +3,8 @@
 
 #NOTE: There are obsolete terms. Not in the graph itself and not in the nodes or node iterator but in the term lookup table (node_lookup)
 
-from GOGrapher import GODiGraph
-from GOGrapher import Aspects
+from GOGranny import GODiGraph
+from GOGranny import Aspects
 from math import log
 import shelve, cPickle
 import sys

@@ -1,4 +1,4 @@
-from GOGrapher import *
+from GOGranny import *
 import random
 
 # We want to print debugging info

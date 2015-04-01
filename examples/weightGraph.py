@@ -1,4 +1,4 @@
-from GOGrapher import *
+from GOGranny import *
 
 # We want to print debugging info
 error = GOError(3)

@@ -1,5 +1,5 @@
 # This is a generalized implementation of the Kou algorithm for creating Steiner Trees.  It is not
-# tied to GOGrapher and can be used with any networkx wieghted graph.
+# tied to GOGranny and can be used with any networkx wieghted graph.
 
 from heapq import *
 from networkx import *

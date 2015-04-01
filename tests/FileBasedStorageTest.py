@@ -1,5 +1,5 @@
 import unittest
-from GOGrapher import *
+from GOGranny import *
 import random
 from utils import *
 from xml.sax.handler import ContentHandler

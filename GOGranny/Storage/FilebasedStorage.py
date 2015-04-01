@@ -4,9 +4,9 @@
 # \author mullerb@musc.edu
 # The GOOWLHandler modified by aswarren@gmail.com to allow only certain edge tpes
 
-from GOGrapher.GONode import GOProteinNode, GOTermNode
+from GOGranny.GONode import GOProteinNode, GOTermNode
 import StorageInterface
-from GOGrapher.GOError import *
+from GOGranny.GOError import *
 
 from xml.sax.handler import ContentHandler
 from xml.sax import make_parser

@@ -1,4 +1,4 @@
-from GOGrapher import *
+from GOGranny import *
 from networkx import *
 import unittest
 

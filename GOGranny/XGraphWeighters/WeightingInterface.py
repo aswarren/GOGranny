@@ -3,9 +3,9 @@
 # \author Brian Muller <mullerb@musc.edu>
 
 
-from GOGrapher import GOError
-from GOGrapher import GOXDiGraph
-from GOGrapher import GODiGraph
+from GOGranny import GOError
+from GOGranny import GOXDiGraph
+from GOGranny import GODiGraph
 
 class WeightingInterface: 
     def __init__(self, storage, species, aspect, directed):

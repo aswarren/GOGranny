@@ -25,7 +25,7 @@ class GOGraph(Graph, GOGraphBase):
             f.close()
         xml = DOMLight.XMLMaker()
         fhandle.write("""<?xml version="1.0" encoding="UTF-8"?>
-        <graph xmlns="http://www.cs.rpi.edu/XGMML" label="GOGrapher Network">
+        <graph xmlns="http://www.cs.rpi.edu/XGMML" label="GOGranny Network">
         """)
         cid = 0
         goids = {}

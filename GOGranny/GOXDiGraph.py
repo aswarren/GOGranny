@@ -36,7 +36,7 @@ class GOXDiGraph(DiGraph, GOGraphBase):
     def toXGMML(self, fhandle):
         xml = DOMLight.XMLMaker()
         fhandle.write("""<?xml version="1.0" encoding="UTF-8"?>
-        <graph xmlns="http://www.cs.rpi.edu/XGMML" directed="1" label="GOGrapher Network">
+        <graph xmlns="http://www.cs.rpi.edu/XGMML" directed="1" label="GOGranny Network">
         """)
         cid = 0
         goids = {}
