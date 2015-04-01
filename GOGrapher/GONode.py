@@ -9,7 +9,7 @@ class GONode:
     PROTEIN_TYPE = "protein_type"
     
     ## Constructor
-    def __init__ (self, nodetype, storage=None, dbid=None, name=None, description=None):
+    def __init__ (self, nodetype, dbid, storage=None, name=None, description=None):
         self.goError = GOError()
         self.storage = storage
         self.dbid = dbid
@@ -23,7 +23,8 @@ class GONode:
                       
 
     def __repr__(self):
-        return str(self)
+        props = ['dbid','storage', 'name','description']
+        return "<GONode {%s}>" % ", ".join(["%s: %s" % (n, self.__dict__[n]) for n in props])            
 
 
     def __hash__(self):
@@ -53,7 +54,7 @@ class GOTermNode(GONode):
 
     ## Constructor
     def __init__ (self, goid, dbid=None, name=None, description=None, storage=None):
-        GONode.__init__(self, GONode.TERM_TYPE, storage, dbid, name, description)
+        GONode.__init__(self, nodetype=GONode.TERM_TYPE, storage=storage, dbid=dbid, name=name, description=description)
         self.goid = goid
         self._proteins = {}
         self._pmids = {}
@@ -101,7 +102,7 @@ class GOProteinNode(GONode):
 
     ## Constructor
     def __init__ (self, symbol, dbid=None, name=None, description=None, storage=None):
-        GONode.__init__(self, GONode.PROTEIN_TYPE, storage, dbid, name, description)
+        GONode.__init__(self, nodetype=GONode.PROTEIN_TYPE, storage=storage, dbid=dbid, name=name, description=description)
         self.symbol = symbol
         self._terms = {}
         if self.storage != None and self.dbid == None:

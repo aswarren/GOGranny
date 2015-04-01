@@ -1,7 +1,7 @@
-GOGranny is based on GOGrapher, a python library that uses the Gene Ontology to 
+GOGranny is a fork of GOGrapher, a python library that uses the Gene Ontology to 
 create a network relating terms to each other and genes/proteins to terms.
 GOGranny is so named to distinguish it from the previous work
-of the GOGrapher team, without whom these additions would not be possible.
+of the GOGrapher team, without whom this would not be possible.
 
 The prerequisites for installation are python (python.org) and 
 NetworkX (networkx.lanl.gov).
@@ -9,8 +9,7 @@ NetworkX (networkx.lanl.gov).
 To install, simply run:
 $> python setup.py install
 
-More information, including the API, bug reporting, and documetation
-can be found at http://projects.dbbe.musc.edu/trac/GOGrapher
+More information, can be found at https://github.com/aswarren/GOGranny
 
 LICENSE:
     This program is free software: you can redistribute it and/or modify

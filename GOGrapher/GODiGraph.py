@@ -68,7 +68,7 @@ class GODiGraph(DiGraph, GOGraphBase):
                 # if this is the root node keep track of it
                 if self.root == None and child.goid == Aspects.ROOTS[self.aspect]:
                     self.root = child
-                self.add_edge(term, child)
+                self.add_edge(child, term)
         progress.finished()
         
         if self.root == None:
@@ -145,15 +145,15 @@ class GODiGraph(DiGraph, GOGraphBase):
 
 
 
-    ## A private function used to find orphan nodes.  It traverses all successors
+    ## A private function used to find orphan nodes.  It traverses all predecessors
     # starting from the given node  using depth first search 
     # @param currentNode The node to start from (usually called with the root)
     # \return A set of all ancestor nodes.
-    def traverseSuccessors(self, currentNode):
+    def traversePredecessors(self, currentNode):
         seen = set()
-        for c in self.successors(currentNode):
+        for c in self.predecessors(currentNode):
             seen.add(c)
-            seen = seen.union(self.traverseSuccessors(c))
+            seen = seen.union(self.traversePredecessors(c))
         return seen
 
 
@@ -162,7 +162,7 @@ class GODiGraph(DiGraph, GOGraphBase):
     def checkGraph(self):
         self.error.debug("Checking graph for orphans...")
         seen = set()
-        seen = self.traverseSuccessors(self.root)
+        seen = self.traversePredecessors(self.root)
         seen.add(self.root)
 
         if len(seen) != self.order():

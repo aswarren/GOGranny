@@ -11,3 +11,7 @@ graphingSuite = unittest.TestSuite([GODiGraphSuite])
 from SteinerTreeTest import *
 SteinerTreeSuite = unittest.TestLoader().loadTestsFromTestCase(TestSteinerTree)
 steinersuite = unittest.TestSuite([SteinerTreeSuite])
+
+from semGODiGraphTest import *
+semGODiGraphSuite = unittest.TestLoader().loadTestsFromTestCase(semGODiGraphTest)
+semSuite = unittest.TestSuite([semGODiGraphSuite])

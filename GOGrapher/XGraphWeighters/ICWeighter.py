@@ -49,8 +49,8 @@ class ICWeighter(WeightingInterface):
 
         # at this point IC has been updated,  using IC of the nodes to determine the semantic distance
         for node in self.originalGraph.nodes_iter():
-            for successor in self.originalGraph.successors_iter(node):
-                self.graph.add_edge(node, successor, weight = abs(node.infoContent - successor.infoContent))
+            for predecessor in self.originalGraph.predecessor_iter(node):
+                self.graph.add_edge(node, predecessor, weight = abs(node.infoContent - predecessor.infoContent))
 
 
     # Calculate the information content of each GONode in the graph

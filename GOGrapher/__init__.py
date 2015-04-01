@@ -10,6 +10,7 @@
 # \section Resources
 # \li The source, docs, bug reporting, and more info can be found at http://projects.dbbe.musc.edu/trac/GOGrapher
 # \section Authors
+# \li Andrew Warren <aswarren@gmail.com>
 # \li Brian Muller <mullerb@musc.edu>
 # \li Adam J Richards <richa@musc.edu>
 # \li Bo Jin <jinbo@musc.edu>
@@ -33,6 +34,7 @@ from Aspects import *
 from GODiGraph import GODiGraph
 from GOGraphBase import GOGraphBase
 from SteinerTree import make_steiner_tree, make_prim_mst
+from semGODiGraph import semGODiGraph
 
 import XGraphWeighters
 import Storage
