@@ -1,8 +1,7 @@
 ## \package Storage.FilebasedStorage
 # Storage is all in memory - The GO info is loaded from an owl file, and
 # association files are specified for the associations that will be used
-# \author mullerb@musc.edu
-# The GOOWLHandler modified by aswarren@gmail.com to allow only certain edge tpes
+# \authors aswarren@gmail.com, mullerb@musc.edu
 
 from GOGranny.GONode import GOProteinNode, GOTermNode
 import StorageInterface
@@ -12,6 +11,30 @@ from xml.sax.handler import ContentHandler
 from xml.sax import make_parser
 
 import cPickle, commands
+from collections import defaultdict
+
+## A parser for the OBO v1.2
+class GOOboHandler():
+    def __init__(self):
+        self.terms={}
+    def parse(self, in_handle):
+        currentTerm=None
+        for line in in_hanlde:
+            line=line.strip()
+            if not line:
+                continue
+            if line == "[Term]":
+                if currentTerm: yield dict(currentTerm)
+                currentTerm = defaultdict(list)
+            elif line == "[Typedef]":
+                currentTerm=None
+            else:
+                if not currentTerm: continue
+                key, sep, val = line.partition(":")
+                currentTerm[key].append(val.strip())
+        if currentTerm is not None:
+            yield dict(currentTerm)
+            
 
 ## A SAX parser for GO OBO XML files.
 class GOOboXmlHandler(ContentHandler):
@@ -112,20 +135,22 @@ class FilebasedStorage(StorageInterface.StorageInterface):
     # @param owfile Location of GO term relationship OWL file - or -
     # @param oboxmlfile Location of GO term relationship OBO XML file
     # @param hardEvidence If true, ignore soft evidence for associations (IEA, IEP, ND)
-    def __init__(self, associations=None, owlfile=None, oboxmlfile=None, hardEvidence=True):
+    def __init__(self, associations=None, owlfile=None, oboxmlfile=None, obofile=None, hardEvidence=True):
         StorageInterface.StorageInterface.__init__(self)
         # dictionary of goid to long names
         self.names = {}
 
-        if owlfile != None and oboxmlfile !=None:
-            self.error.handleFatal("You must specify either an owlfile xor an oboxmlfile as a keyword parameter to FilebasedStorage constructor")            
+        if owlfile != None and oboxmlfile !=None and obofile != None:
+            self.error.handleFatal("You must specify either an owlfile, oboxmlfile, or obofile as a keyword parameter to FilebasedStorage constructor")            
         
+        if obofile != None:
+            self.parseObo(obofile)
         if owlfile != None:
             self.parseOwl(owlfile)
         elif oboxmlfile != None:
             self.parseOboXml(oboxmlfile)
         else:
-            self.error.handleFatal("You must specify either an owlfile xor an oboxmlfile as a keyword parameter to FilebasedStorage.__init__")
+            self.error.handleFatal("You must specify either an ontology file as a keyword parameter to FilebasedStorage.__init__")
         self.associations_term = {}
         self.associations_prot = {}
         self.pmids = {}
@@ -190,7 +215,17 @@ class FilebasedStorage(StorageInterface.StorageInterface):
         f.close()
         return associations_term, associations_prot, pmids
         
-
+    def parseObo(self, location):
+        self.error.debug("About to parse OBO file %s" % location)
+        try:
+            f = open(location, 'r')
+            obo_handler=GOOboHandler()
+            for term in obo_handler.parse(f):
+		print " ".join(term.keys())
+            f.close()
+        except Exception, e:
+            self.error.handleFatal("Could not parse OWL file %s: %s" % (location, str(e)))
+        	
 
     def parseOwl(self, location):
         self.error.debug("About to parse OWL file %s" % location)
