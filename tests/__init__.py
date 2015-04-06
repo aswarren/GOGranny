@@ -1,8 +1,8 @@
 import unittest
 
 from FileBasedStorageTest import *
-FileBasedStorageSuite = unittest.TestLoader().loadTestsFromTestCase(FileBasedStorageTest)
-storageSuite = unittest.TestSuite([FileBasedStorageSuite])
+FileBasedOWLSuite = unittest.TestLoader().loadTestsFromTestCase(FileBasedStorageOWLTest)
+storageSuite = unittest.TestSuite([FileBasedOWLSuite])
 
 from GODiGraphTest import *
 GODiGraphSuite = unittest.TestLoader().loadTestsFromTestCase(GODiGraphTest)

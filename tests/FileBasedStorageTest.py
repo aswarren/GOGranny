@@ -27,8 +27,19 @@ class TestGOOwlHandler(ContentHandler):
     def characters(self, data):
         self.cdata += data
 
+class FileBasedStorageOBOTest(unittest.TestCase):
+    def setUp(self):
+        self.obofile = "./tests/data/go-basic-040415.obo"
+        self.storage = StorageFactory.makeStorage(Storage.Types.FILEBASED, None, obofile=self.obofile)
+        self.aspect = Aspects.BP
+        if not self.storge:
+            self.fail("self. storage did not initialize")
+    def testPickling(self):
+        assoclist = self.storage.getTermAssocList(self.aspect).keys()
+        self.storage.saveState()
+        self.storage.loadState()
 
-class FileBasedStorageTest(unittest.TestCase):
+class FileBasedStorageOWLTest(unittest.TestCase):
     def setUp(self):
         self.owlfile = "./tests/data/go_daily-termdb.owl"
         self.oboxmlfile = "./tests/data/go_daily-termdb.obo-xml"
@@ -82,3 +93,9 @@ class FileBasedStorageTest(unittest.TestCase):
     def testOWLNames(self):
         term = self.storage.makeTerm("GO:0000012")
         self.assertEqual(term.name, "single strand break repair")
+
+
+if __name__ == '__main__':
+    FileBasedOBOSuite = unittest.TestLoader().loadTestsFromTestCase(FileBasedStorageOBOTest)
+    storageSuite = unittest.TestSuite([FileBasedOBOSuite])
+    storageSuite.debug()

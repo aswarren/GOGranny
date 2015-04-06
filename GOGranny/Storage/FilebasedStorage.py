@@ -15,11 +15,21 @@ from collections import defaultdict
 
 ## A parser for the OBO v1.2
 class GOOboHandler():
-    def __init__(self):
-        self.terms={}
-    def parse(self, in_handle):
+    def __init__(self, truepath_only=True):
+        self.aspects={}
+        self.relationships={}
+        self.names={}
+        self.truepath_relations=set(["part_of","is_a"])
+        self.other_relations=set()
+        self.truepath_only=truepath_only
+
+    def processVal(self, val):
+        result=val.split("!")[0]
+        return result.strip()
+
+    def obo_iterator(self, in_handle):
         currentTerm=None
-        for line in in_hanlde:
+        for line in in_handle:
             line=line.strip()
             if not line:
                 continue
@@ -29,11 +39,36 @@ class GOOboHandler():
             elif line == "[Typedef]":
                 currentTerm=None
             else:
-                if not currentTerm: continue
+                if currentTerm == None: continue
                 key, sep, val = line.partition(":")
-                currentTerm[key].append(val.strip())
+                currentTerm[key].append(self.processVal(val))
         if currentTerm is not None:
             yield dict(currentTerm)
+
+    def processTerm(self, term):
+        tid=term["id"][0]
+        for k in term.keys():
+            if (k in self.truepath_relations) or (k in self.other_relations and not truepath_only):
+                #for some reason the parsing interface has relationships stored from ancestors to descendants. going with it for now
+                for ancestor in term[k]:
+		    if ancestor not in self.relationships:
+                        self.relationships[ancestor]=[]
+                    self.relationships[ancestor].append(tid)
+            elif k == 'namespace':
+                for n in term[k]:
+                    if n not in self.aspects:
+                        self.aspects[n]=[]
+                    self.aspects[n].append(tid)
+            elif k == "name":
+                for n in term[k]:
+                    self.names[tid]=n
+                    
+            
+        
+    def parse(self, in_handle):
+        for term in self.obo_iterator(in_handle):
+            self.processTerm(term)
+
             
 
 ## A SAX parser for GO OBO XML files.
@@ -145,12 +180,12 @@ class FilebasedStorage(StorageInterface.StorageInterface):
         
         if obofile != None:
             self.parseObo(obofile)
-        if owlfile != None:
+        elif owlfile != None:
             self.parseOwl(owlfile)
         elif oboxmlfile != None:
             self.parseOboXml(oboxmlfile)
         else:
-            self.error.handleFatal("You must specify either an ontology file as a keyword parameter to FilebasedStorage.__init__")
+            self.error.handleFatal("You must specify an ontology file as a keyword parameter to FilebasedStorage.__init__")
         self.associations_term = {}
         self.associations_prot = {}
         self.pmids = {}
@@ -220,11 +255,13 @@ class FilebasedStorage(StorageInterface.StorageInterface):
         try:
             f = open(location, 'r')
             obo_handler=GOOboHandler()
-            for term in obo_handler.parse(f):
-		print " ".join(term.keys())
+            obo_handler.parse(f)
             f.close()
         except Exception, e:
-            self.error.handleFatal("Could not parse OWL file %s: %s" % (location, str(e)))
+            self.error.handleFatal("Could not parse OBO file %s: %s" % (location, str(e)))
+        self.aspects = obo_handler.aspects
+        self.names = obo_handler.names
+        self.relationships= obo_handler.relationships
         	
 
     def parseOwl(self, location):
