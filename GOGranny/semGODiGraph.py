@@ -129,14 +129,16 @@ class semGODiGraph(GODiGraph):
 			init_uncert=-(log(init_prob)/log(2))# since all the nodes have equal probability the average ends up being -log P		
 			#for every node in the ontology get its contribution to the annotation uncertainty
 			#this part skips the inner loop because the summation will just be the -log(j_prob)
+			num_root=0
 			for j in self.nodes_iter():
 				if (not j in excluded) and (not j == annot_node):#if this term is in the ancestors induced by a node it has a probability of 1 and uncertainty of 0
-					induced_nodes=self.getAnc(j).union(excluded)#get the number of nodes that cannot follow this one in an annotation
+					induced_nodes=self.getAnc(j).union(excluded).union(set([j]))#get the number of nodes that cannot follow this one in an annotation
 					if annot_node != None: induced_nodes.add(annot_node)
 					j_num_induce=len(induced_nodes)
 					j_num_desc=len(self.getDec(j))
 					if (j_num_induce == 0):
-						sys.stderr.write("No ancestor node found: "+str(j.dbid)+"\n")
+						num_root+=1
+						assert num_root <= 1
 					if(self.num_nodes==j_num_induce+j_num_desc):
 						j_probability=1
 					else: j_probability=1/float(self.num_nodes-j_num_induce-j_num_desc)
