@@ -130,6 +130,7 @@ class GOOwlHandler(ContentHandler):
             if about.startswith("http://purl.org/obo/owl/GO#"):
                 self.current_goid = about[27:].replace('_', ':')
                 self.relationships[self.current_goid] = []
+
         elif name == "owl:ObjectProperty" and len(attributes) >0:
             about = attributes["rdf:about"]
             if about.startswith("http://purl.org/obo/owl/OBO_REL#"):
@@ -152,6 +153,8 @@ class GOOwlHandler(ContentHandler):
             if not self.cdata in self.aspects.keys():
                 self.aspects[self.cdata] = []
             self.aspects[self.cdata].append(self.current_goid)
+        elif name == "oboInOwl:hasDate":
+		self.date=self.cdata.strip()
         elif name == "rdfs:label" and self.current_goid != None and not self.names.has_key(self.current_goid):
             self.names[self.current_goid] = self.cdata.strip()            
 
@@ -289,6 +292,7 @@ class FilebasedStorage(StorageInterface.StorageInterface):
                 self.relationships[parent].append(child)
         self.aspects = handler.aspects
         self.names = handler.names
+        self.date = getattr(handler,'date',"")
 
 
     def parseOboXml(self, location):
