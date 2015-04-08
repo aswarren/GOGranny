@@ -43,7 +43,7 @@ def main(init_args):
 		min_uncert=-log(float(1)/cur_graph.num_nodes,2)
 		max_uncert=min_uncert*2
 		ti=(graph_uncert-min_uncert)/(max_uncert-min_uncert)#for clarity. could just be min_uncert.
-		cur_row={'date':date,'entropy':graph_uncert,'edges':cur_graph.number_of_edges(),'nodes':cur_graph.num_nodes,'in_degree':float(sum(out_degree.values()))/len(degree_total),'out_degree':float(sum(in_degree.values()))/len(degree_total),'degree':float(sum(degree_total))/len(degree_total)}
+		cur_row={'date':date,'TI':ti,'entropy':graph_uncert,'edges':cur_graph.number_of_edges(),'nodes':cur_graph.num_nodes,'in_degree':float(sum(out_degree.values()))/len(degree_total),'out_degree':float(sum(in_degree.values()))/len(degree_total),'degree':float(sum(degree_total))/len(degree_total)}
 		results.loc[num_file]=pd.Series(cur_row)
 	results.to_csv('go_stats_table.txt',sep="\t",mode='w')
 			
