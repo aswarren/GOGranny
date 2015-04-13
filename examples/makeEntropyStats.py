@@ -6,7 +6,6 @@ import pandas as pd
 from math import log
 import os, sys
 
-
 #Calculate entropy of the ontology and create and image as well
 def main(init_args):
 
@@ -19,11 +18,12 @@ def main(init_args):
 	results = pd.DataFrame(columns=['date','entropy','TI','edges','nodes','in_degree','out_degree','degree'])
 	num_file=0
 	for go_file in go_files:
+                print "creating stats for "+go_file
 		num_file+=1
 		#expand tilde to be actual home directory
 		go_file=os.path.expanduser(go_file)
 
-		storage= StorageFactory.makeStorage(Storage.Types.FILEBASED, owlfile=go_file, hardEvidence=False)
+		storage= StorageFactory.makeStorage(Storage.Types.FILEBASED, obofile=go_file, hardEvidence=False)
 
 		cur_graph=semGODiGraph(storage, getattr(Aspects,onto_cat))
 		cur_graph.makeGraph()
@@ -45,7 +45,7 @@ def main(init_args):
 		ti=(graph_uncert-min_uncert)/(max_uncert-min_uncert)#for clarity. could just be min_uncert.
 		cur_row={'date':date,'TI':ti,'entropy':graph_uncert,'edges':cur_graph.number_of_edges(),'nodes':cur_graph.num_nodes,'in_degree':float(sum(out_degree.values()))/len(degree_total),'out_degree':float(sum(in_degree.values()))/len(degree_total),'degree':float(sum(degree_total))/len(degree_total)}
 		results.loc[num_file]=pd.Series(cur_row)
-	results.to_csv('go_stats_table.txt',sep="\t",mode='w')
+	results.to_csv(onto_cat+'_go_stats_table.txt',sep="\t",mode='w')
 			
 if __name__ == "__main__":
         main(sys.argv[1:])
