@@ -50,6 +50,8 @@ class GOOboHandler():
 
     def processTerm(self, term):
         tid=term["id"][0]
+        has_namespace=False
+        has_name=False
         for k in term.keys():
             if (k in self.truepath_relations) or (k in self.other_relations and not truepath_only):
                 #for some reason the parsing interface has relationships stored from ancestors to descendants. going with it for now
@@ -58,13 +60,16 @@ class GOOboHandler():
                         self.relationships[ancestor]=[]
                     self.relationships[ancestor].append(tid)
             elif k == 'namespace':
+                has_namespace=True
                 for n in term[k]:
                     if n not in self.aspects:
                         self.aspects[n]=[]
                     self.aspects[n].append(tid)
             elif k == "name":
+                has_name=True
                 for n in term[k]:
                     self.names[tid]=n
+        assert has_namespace and has_name
                     
             
         
@@ -358,7 +363,7 @@ class FilebasedStorage(StorageInterface.StorageInterface):
             if term_id in golist:
                 found = True
         if not found:
-            self.error.handleWarning("No term with id of %i" % term_id)
+            self.error.handleWarning("No term with id of %s" % str(term_id))
         name = self.names.get(term_id, None)            
         return GOTermNode(term_id, storage=self, name=name)
 
