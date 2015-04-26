@@ -12,6 +12,7 @@ from xml.sax import make_parser
 
 import cPickle, commands
 from collections import defaultdict
+import gzip
 
 ## A parser for the OBO v1.2
 class GOOboHandler():
@@ -33,6 +34,8 @@ class GOOboHandler():
             line=line.strip()
             if not line:
                 continue
+            if line.startswith("date:"):
+               self.date=line.replace('date:','').strip()
             if line == "[Term]":
                 if currentTerm: yield dict(currentTerm)
                 currentTerm = defaultdict(list)
@@ -47,6 +50,8 @@ class GOOboHandler():
 
     def processTerm(self, term):
         tid=term["id"][0]
+        has_namespace=False
+        has_name=False
         for k in term.keys():
             if (k in self.truepath_relations) or (k in self.other_relations and not truepath_only):
                 #for some reason the parsing interface has relationships stored from ancestors to descendants. going with it for now
@@ -55,13 +60,16 @@ class GOOboHandler():
                         self.relationships[ancestor]=[]
                     self.relationships[ancestor].append(tid)
             elif k == 'namespace':
+                has_namespace=True
                 for n in term[k]:
                     if n not in self.aspects:
                         self.aspects[n]=[]
                     self.aspects[n].append(tid)
             elif k == "name":
+                has_name=True
                 for n in term[k]:
                     self.names[tid]=n
+        assert has_namespace and has_name
                     
             
         
@@ -256,7 +264,10 @@ class FilebasedStorage(StorageInterface.StorageInterface):
     def parseObo(self, location):
         self.error.debug("About to parse OBO file %s" % location)
         try:
-            f = open(location, 'r')
+            if location.endswith('.gzip') or location.endswith('.gz'):
+                f=gzip.open(location,'rb')
+            else:
+                f = open(location, 'r')
             obo_handler=GOOboHandler()
             obo_handler.parse(f)
             f.close()
@@ -265,6 +276,7 @@ class FilebasedStorage(StorageInterface.StorageInterface):
         self.aspects = obo_handler.aspects
         self.names = obo_handler.names
         self.relationships= obo_handler.relationships
+        self.date = getattr(obo_handler,'date',"")
         	
 
     def parseOwl(self, location):
@@ -351,7 +363,7 @@ class FilebasedStorage(StorageInterface.StorageInterface):
             if term_id in golist:
                 found = True
         if not found:
-            self.error.handleWarning("No term with id of %i" % term_id)
+            self.error.handleWarning("No term with id of %s" % str(term_id))
         name = self.names.get(term_id, None)            
         return GOTermNode(term_id, storage=self, name=name)
 
