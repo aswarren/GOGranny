@@ -48,7 +48,8 @@ def main(init_args):
         tree_values={}
         for i in range(2,11):
             cur_tree= makeEntropyChart.create_tree(i, h=None, num_nodes=cur_graph.num_nodes)
-            tree_values["tree"+str(i)]=graph_uncert/cur_tree.calc_graph_uncert()
+            cur_tree_value=cur_tree.calc_graph_uncert()
+            tree_values["tree"+str(i)]=(-1*graph_uncert-cur_tree_value)/(max_uncert-cur_tree_value)
 		cur_row={'date':date,'TI':ti,'entropy':graph_uncert,'edges':cur_graph.number_of_edges(),'nodes':cur_graph.num_nodes,'in_degree':float(sum(out_degree.values()))/len(degree_total),'out_degree':float(sum(in_degree.values()))/len(degree_total),'degree':float(sum(degree_total))/len(degree_total)}
         cur_row.update(tree_values)
 		results.loc[num_file]=pd.Series(cur_row)
