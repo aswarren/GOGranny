@@ -264,7 +264,7 @@ class FilebasedStorage(StorageInterface.StorageInterface):
 
     #Gets all associations with a protein (assuming GAF is in DBID order)
     def associationGenerator(self, location, hardEvidence, category=set(['F','C','P'])):
-        (open_func, options) = (gzip.open, "rb") if (map_args.gaf_file.endswith('.gz') or map_args.gaf_file.endswith('.gzip')) else (open, "r")
+        (open_func, options) = (gzip.open, "rb") if (location.endswith('.gz') or location.endswith('.gzip')) else (open, "r")
         with open_func(location, options) as f:
             associations_prot = {}
             cur_feature = None
