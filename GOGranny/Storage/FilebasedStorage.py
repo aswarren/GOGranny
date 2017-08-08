@@ -215,6 +215,7 @@ class FilebasedStorage(StorageInterface.StorageInterface):
     def loadState(self):
         pass
 
+
     def parseAssociation(self, location, hardEvidence):
         f = open(location)
         associations_term = {}
@@ -260,6 +261,45 @@ class FilebasedStorage(StorageInterface.StorageInterface):
             progress.finished()
         f.close()
         return associations_term, associations_prot, pmids
+
+    #Gets all associations with a protein (assuming GAF is in DBID order)
+    def associationGenerator(self, location, hardEvidence, category=set(['F','C','P'])):
+        with open(location) as f:
+            associations_prot = {}
+            cur_feature = None
+            prev_feature = None
+
+            result, output = commands.getstatusoutput("wc -l %s" % location)
+            progress = None
+            if result == 0:
+                try:
+                    numlines = int(output.split(' ')[0])
+                    self.error.debug("There are %i lines to process in %s" % (numlines, location))
+                    progress = GOPercentMessage(numlines)
+                except Exception, e:
+                    pass
+                    
+            for line in f:
+                if progress is not None:
+                    progress.update()            
+                if not line.startswith("!"):
+                    parts = map(lambda x: x.strip(), line.split('\t'))
+                    if parts[6] in ['IEA', 'IEP', 'ND'] and hardEvidence:
+                        continue
+                    if not parts[8] in category:
+                        continue
+                    if parts[3] == "NOT":
+                        continue
+                    cur_feature = parts[2]
+                    goid = parts[4]
+                    associations_prot.setdefault(cur_feature,{}).setdefault(goid,[]).append(parts)
+                    if cur_feature != prev_feature and prev_feature!=None:
+                        emit_object=associations_prot.pop(prev_feature)
+                        prev_feature=cur_feature
+                        yield emit_object
+            if progress is not None:
+                progress.finished()
+            yield associations_prot[cur_feature]
         
     def parseObo(self, location):
         self.error.debug("About to parse OBO file %s" % location)
