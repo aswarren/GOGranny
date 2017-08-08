@@ -21,9 +21,9 @@ from GOError import GOError, GOPercentMessage
  
 #m = re.search("\.",networkx.__version__)
 #if float(networkx.__version__[:m.start()]) < float("1.7"):
-if networkx.__version__ < "1.7":
-    error = GOError()
-    error.handleFatal("You must upgrade networkx to at least version 1.7.")
+#if networkx.__version__ < "1.7":
+#    error = GOError()
+#    error.handleFatal("You must upgrade networkx to at least version 1.7.")
 
 from StorageFactory import StorageFactory
 from GOXDiGraph import GOXDiGraph
