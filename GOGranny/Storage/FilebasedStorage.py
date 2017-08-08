@@ -296,8 +296,8 @@ class FilebasedStorage(StorageInterface.StorageInterface):
                     associations_prot.setdefault(cur_feature,{}).setdefault(goid,[]).append(parts)
                     if cur_feature != prev_feature and prev_feature!=None:
                         emit_object=associations_prot.pop(prev_feature)
-                        prev_feature=cur_feature
                         yield emit_object
+                    prev_feature=cur_feature
             if progress is not None:
                 progress.finished()
             yield associations_prot[cur_feature]
