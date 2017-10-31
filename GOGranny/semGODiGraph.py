@@ -46,7 +46,9 @@ class semGODiGraph(GODiGraph):
 			seenbelow.add(c)
 			seenbelow=seenbelow.union(self.trans_closure(c,seenabove.copy()))
 		currentNode.descendants=seenbelow.copy()
-		if len(currentNode.descendants)==0: self.leaves.add(currentNode)
+		if len(currentNode.descendants)==0:
+			self.leaves.add(currentNode)
+			currentNode.leaf = True
 		return seenbelow.copy()
 
 	##Check if the trans_closure has been computed and if not do it
@@ -203,7 +205,7 @@ class semGODiGraph(GODiGraph):
 	#WARNING: The code here should be changed to account for obsolete terms being called here
 	#apparently nodes are still created for obsolete nodes
 	#if the TERM IS OBSOLETE THEN AN EMPTY SET WILL BE RETURNED
-	def getAllAnc(self, terms):
+	def getAllAnc(self, terms, include_self=True):
 		result=set()
 		for t in terms:
 			n=self.idGetNode(t)
@@ -211,7 +213,8 @@ class semGODiGraph(GODiGraph):
 				if not hasattr(n, 'ancestors'):
 					sys.stderr.write(str(n.dbid)+" does not have ancestors\n")
 					return result
-				result.add(n)
+				if include_self:
+					result.add(n)
 				result=result.union(n.ancestors)
 		return result
 				
