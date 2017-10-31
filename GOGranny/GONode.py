@@ -16,6 +16,7 @@ class GONode:
         self.type = nodetype
         self.name = name
         self.description = description
+        self.leaf = False
 
 
     def __ne__(self, other):
