@@ -294,7 +294,7 @@ class FilebasedStorage(StorageInterface.StorageInterface):
                     cur_feature = parts[2]
                     goid = parts[4]
                     if by_category:
-                        associations_prot.setdefault(cur_feature,{}).setdefault(parts[8],[]).append(parts)
+                        associations_prot.setdefault(cur_feature,{}).setdefault(parts[8],{}).setdefault(goid,[]).append(parts)
                     else:
                         associations_prot.setdefault(cur_feature,{}).setdefault(goid,[]).append(parts)
                     if cur_feature != prev_feature and prev_feature!=None:
