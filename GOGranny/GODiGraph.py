@@ -4,7 +4,7 @@
 
 #import networkx
 from networkx import DiGraph, dfs_postorder_nodes, is_directed_acyclic_graph
-from networkx import topological_sort, topological_sort_recursive
+from networkx import topological_sort #gone in future networkx, topological_sort_recursive
 
 # imports local modules
 from GOError import GOError, GOPercentMessage
