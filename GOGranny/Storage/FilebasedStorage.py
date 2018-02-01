@@ -263,7 +263,7 @@ class FilebasedStorage(StorageInterface.StorageInterface):
         return associations_term, associations_prot, pmids
 
     #Gets all associations with a protein (assuming GAF is in DBID order)
-    def associationGenerator(self, location, hardEvidence, category=set(['F','C','P'])):
+    def associationGenerator(self, location, hardEvidence, category=set(['F','C','P']), by_category=False, include_not=False):
         (open_func, options) = (gzip.open, "rb") if (location.endswith('.gz') or location.endswith('.gzip')) else (open, "r")
         with open_func(location, options) as f:
             associations_prot = {}
@@ -289,11 +289,14 @@ class FilebasedStorage(StorageInterface.StorageInterface):
                         continue
                     if not parts[8] in category:
                         continue
-                    if parts[3] == "NOT":
+                    if parts[3] == "NOT" and not include_not:
                         continue
                     cur_feature = parts[2]
                     goid = parts[4]
-                    associations_prot.setdefault(cur_feature,{}).setdefault(goid,[]).append(parts)
+                    if by_category:
+                        associations_prot.setdefault(cur_feature,{}).setdefault(parts[8],[]).append(parts)
+                    else:
+                        associations_prot.setdefault(cur_feature,{}).setdefault(goid,[]).append(parts)
                     if cur_feature != prev_feature and prev_feature!=None:
                         emit_object=associations_prot.pop(prev_feature)
                         yield emit_object
