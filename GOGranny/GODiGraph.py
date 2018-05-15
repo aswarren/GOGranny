@@ -30,21 +30,27 @@ class GODiGraph(DiGraph, GOGraphBase):
         DiGraph.__init__(self, weighted=False)
         GOGraphBase.__init__(self, storage, species, aspect)
         self.root = None
+        self.aliases={}
 
 
     ## Create a GO directed graph.
     # @param annotatedTermsOnly Only keep nodes on the graph that are either annotated or that
     def makeGraph(self, annotatedTermsOnly=True):
+        primeLookup = self.storage.getAliases(self.aspect)
+        #reverse alias lookup structure
+        for prime, aliases in primeLookup.iteritems():
+            for alias in aliases:
+                self.aliases[alias]=prime 
         assoclist = self.storage.getTermAssocList(self.aspect)
-        terms=self._makeGraph(assoclist, annotatedTermsOnly)
+        terms=self._makeGraph(assoclist, annotatedTermsOnly, primeLookup)
         self.checkGraph()
-	return terms
+        return terms
 
 
     ## An internal function that should not be publicly called.  It creates the edges
     # in the graph given an association list.
     # @param assoclist A hash of lists - the hash key is the parent term id, and the hash value is the list of children ids            
-    def _makeGraph(self, assoclist, annotatedTermsOnly):
+    def _makeGraph(self, assoclist, annotatedTermsOnly, prime_to_alias):
         self.error.debug("Making a graph with %i initial nodes.  This might take a minute." % len(assoclist))
         # at this point we need to add edges between nodes - as we create the edge, networkx will add the nodes.  We'll go ahead and
         # make a hash of actual nodes as we go along so we only have to make each one once
@@ -69,6 +75,8 @@ class GODiGraph(DiGraph, GOGraphBase):
                 if self.root == None and child.goid == Aspects.ROOTS[self.aspect]:
                     self.root = child
                 self.add_edge(child, term)
+                for alias in prime_to_alias.get(child_id,[]): terms.setdefault(alias,child)
+            for alias in prime_to_alias.get(term_id,[]): terms.setdefault(alias,term)
         progress.finished()
         
         if self.root == None:

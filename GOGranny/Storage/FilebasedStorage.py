@@ -23,6 +23,7 @@ class GOOboHandler():
         self.truepath_relations=set(["part_of","is_a"])
         self.other_relations=set()
         self.truepath_only=truepath_only
+        self.aliases={}
 
     def processVal(self, val):
         result=val.split("!")[0]
@@ -50,8 +51,10 @@ class GOOboHandler():
 
     def processTerm(self, term):
         tid=term["id"][0]
-        has_namespace=False
-        has_name=False
+        namespace=term.get("namespace",[None])[0]
+        self.aspects.setdefault(namespace,[]).append(tid)
+        name=term.get("name",[None])[0]
+        self.names.setdefault(tid,name)
         for k in term.keys():
             for v in term.get("relationship",[]):
                 parts=v.split(" ")
@@ -67,17 +70,14 @@ class GOOboHandler():
                     if ancestor not in self.relationships:
                         self.relationships[ancestor]=[]
                     self.relationships[ancestor].append(tid)
-            elif k == 'namespace':
-                has_namespace=True
-                for n in term[k]:
-                    if n not in self.aspects:
-                        self.aspects[n]=[]
-                    self.aspects[n].append(tid)
-            elif k == "name":
-                has_name=True
-                for n in term[k]:
-                    self.names[tid]=n
-        assert has_namespace and has_name
+            elif k == "alt_id":
+                for alias in term[k]:
+                    self.aliases.setdefault(namespace,{}).setdefault(tid,[]).append(alias)
+            elif k == "replaced_by":
+                for alias in term[k]:
+                    self.aliases.setdefault(namespace,{}).setdefault(alias,[]).append(tid)
+
+        assert namespace and name
                     
             
         
@@ -193,6 +193,7 @@ class FilebasedStorage(StorageInterface.StorageInterface):
         StorageInterface.StorageInterface.__init__(self)
         # dictionary of goid to long names
         self.names = {}
+        self.aliases = {}
 
         if owlfile != None and oboxmlfile !=None and obofile != None:
             self.error.handleFatal("You must specify either an owlfile, oboxmlfile, or obofile as a keyword parameter to FilebasedStorage constructor")            
@@ -326,6 +327,7 @@ class FilebasedStorage(StorageInterface.StorageInterface):
         except Exception, e:
             self.error.handleFatal("Could not parse OBO file %s: %s" % (location, str(e)))
         self.aspects = obo_handler.aspects
+        self.aliases= obo_handler.aliases
         self.names = obo_handler.names
         self.relationships= obo_handler.relationships
         self.date = getattr(obo_handler,'date',"")
@@ -394,6 +396,8 @@ class FilebasedStorage(StorageInterface.StorageInterface):
             result[term] = [i for i in self.relationships.get(term,[]) if interAspect or i in self.aspects[aspect]]
         return result
 
+    def getAliases(self, aspect):
+        return self.aliases[aspect]
 
     def getPMIDReferences(self, term, species):
         if not self.pmids.has_key(species):

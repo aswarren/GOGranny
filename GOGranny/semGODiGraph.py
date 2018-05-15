@@ -220,13 +220,12 @@ class semGODiGraph(GODiGraph):
 				
 
 	##Get Node according to term id
-	#Need to modify this function and the storage structure to track obsolete terms and
-	#auto_convert to suggested alternatives
+	#storage structure tracks obsolete terms and auto_converts to suggested alternatives
 	def idGetNode(self, term_id):
-		result=None
 		if term_id == None:
-			return result
-		elif term_id in self.node_lookup:
-			result=self.node_lookup[term_id]
+			return None
+		result=self.node_lookup.get(term_id, None)
+		if term_id in self.aliases:
+			sys.stderr.write("WARNING: Old GOID autoconverted from "+term_id+" to "+result.dbid+"\n")
 		return result
 				
