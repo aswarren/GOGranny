@@ -53,10 +53,18 @@ class GOOboHandler():
         has_namespace=False
         has_name=False
         for k in term.keys():
+            for v in term.get("relationship",[]):
+                parts=v.split(" ")
+                relation=parts[0]
+                ancestor=parts[-1]
+                if (relation in self.truepath_relations) or (relation in self.other_relations and not truepath_only):
+                    #for some reason the parsing interface has relationships stored from ancestors to descendants. going with it for now
+                    self.relationships.setdefault(ancestor,[]).append(tid)
+
             if (k in self.truepath_relations) or (k in self.other_relations and not truepath_only):
                 #for some reason the parsing interface has relationships stored from ancestors to descendants. going with it for now
                 for ancestor in term[k]:
-		    if ancestor not in self.relationships:
+                    if ancestor not in self.relationships:
                         self.relationships[ancestor]=[]
                     self.relationships[ancestor].append(tid)
             elif k == 'namespace':
@@ -378,16 +386,12 @@ class FilebasedStorage(StorageInterface.StorageInterface):
         self.names = handler.names
 
 
-    def getTermAssocList(self, aspect):
+    def getTermAssocList(self, aspect, interAspect=False):
         # The result var is a hash of lists - the hash key is the parent term id, and the hash value is the list of children ids
         result = {}
         for term in self.aspects[aspect]:
-            # if a term has kids
-            if self.relationships.has_key(term):
-                result[term] = self.relationships[term]
-            # otherwise, no kids
-            else:
-                result[term] = []
+            #only store kids within aspect by default
+            result[term] = [i for i in self.relationships.get(term,[]) if interAspect or i in self.aspects[aspect]]
         return result
 
 
