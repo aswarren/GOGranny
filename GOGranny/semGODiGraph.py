@@ -192,12 +192,12 @@ class semGODiGraph(GODiGraph):
 		
 	##For a node retreive ancestors
 	def getAncCopy(self, tnode):
-		return getAnc().copy()	
+		return self.getAnc().copy()
 
 
 	##For a node retreive descendants
 	def getDecCopy(self, tnode):
-		return getDec().copy()	
+		return self.getDec().copy()
 		
 
 	##For a set of terms get all their ancestors
