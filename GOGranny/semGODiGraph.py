@@ -5,6 +5,7 @@
 
 from GOGranny import GODiGraph
 from GOGranny import Aspects
+from GOGranny import GONode
 from math import log
 import shelve, cPickle
 import sys
@@ -208,7 +209,10 @@ class semGODiGraph(GODiGraph):
 	def getAllAnc(self, terms, include_self=True):
 		result=set()
 		for t in terms:
-			n=self.idGetNode(t)
+			if type(t) == GONode.GOTermNode:
+				n = t
+			else:
+				n=self.idGetNode(t)
 			if n!= None:
 				if not hasattr(n, 'ancestors'):
 					sys.stderr.write(str(n.dbid)+" does not have ancestors\n")
